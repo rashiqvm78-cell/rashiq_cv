@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – Rashiq Portfolio</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #050810;
+      --bg2: #0a0e1a;
+      --bg3: #0f1422;
+      --sidebar: #080c18;
+      --surface: rgba(255,255,255,0.04);
+      --surface2: rgba(255,255,255,0.07);
+      --surface3: rgba(255,255,255,0.1);
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f0f2ff;
+      --text2: #8892b0;
+      --text3: #4a5568;
+      --accent: #4f8ef7;
+      --accent2: #7c3aed;
+      --accent3: #06d6a0;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 14px;
+      --sidebar-w: 260px;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html, body { height: 100%; }
+    body { font-family: var(--font-body); background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    #login-screen.hidden { display: none; }
+
+    .login-card {
+      width: 100%; max-width: 440px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      backdrop-filter: blur(20px);
+      position: relative; overflow: hidden;
+    }
+    .login-card::before {
+      content: '';
+      position: absolute; top: -100px; right: -100px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(79,142,247,0.12), transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .login-logo {
+      font-family: var(--font-display); font-size: 1.8rem; font-weight: 800;
+      color: var(--text); letter-spacing: -0.04em; margin-bottom: 0.25rem;
+    }
+    .login-logo span { color: var(--accent); }
+    .login-subtitle { font-size: 0.875rem; color: var(--text2); margin-bottom: 2.5rem; }
+    .login-label { font-size: 0.8rem; font-weight: 500; color: var(--text2); margin-bottom: 0.4rem; display: block; }
+    .login-input {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 10px; padding: 0.875rem 1rem;
+      color: var(--text); font-family: var(--font-body); font-size: 0.9rem;
+      outline: none; transition: all var(--transition); margin-bottom: 1rem;
+    }
+    .login-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,142,247,0.15); }
+    .login-input::placeholder { color: var(--text3); }
+    .login-btn {
+      width: 100%; padding: 0.9rem;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 12px; font-family: var(--font-body); font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; transition: all var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .login-btn:hover { background: #3a7ae8; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(79,142,247,0.35); }
+    .login-error {
+      font-size: 0.8rem; color: var(--danger);
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem;
+      display: none;
+    }
+    .login-hint {
+      font-size: 0.75rem; color: var(--text3); text-align: center; margin-top: 1.5rem;
+      padding-top: 1.5rem; border-top: 1px solid var(--border);
+    }
+    .login-hint strong { color: var(--text2); }
+
+    /* ── APP SHELL ── */
+    #app { display: none; height: 100vh; }
+    #app.visible { display: flex; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); min-height: 100vh;
+      background: var(--sidebar); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      flex-shrink: 0; position: relative; z-index: 10;
+      transition: transform var(--transition);
+    }
+    .sidebar-logo {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo-text {
+      font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;
+      color: var(--text); letter-spacing: -0.03em;
+    }
+    .sidebar-logo-text span { color: var(--accent); }
+    .sidebar-logo-sub { font-size: 0.72rem; color: var(--text3); margin-top: 0.2rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .sidebar-nav { flex: 1; padding: 1rem 0; }
+    .nav-section-label {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text3);
+      padding: 0.75rem 1.5rem 0.25rem;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.7rem 1.5rem; margin: 0.15rem 0.75rem;
+      border-radius: 10px; cursor: pointer;
+      font-size: 0.875rem; color: var(--text2); font-weight: 500;
+      transition: all var(--transition); user-select: none;
+    }
+    .nav-item:hover { background: var(--surface); color: var(--text); }
+    .nav-item.active { background: rgba(79,142,247,0.12); color: var(--accent); }
+    .nav-item-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-footer {
+      padding: 1rem 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .user-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem; border-radius: 10px;
+      background: var(--surface); margin-bottom: 0.75rem;
+    }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; color: #fff;
+      flex-shrink: 0;
+    }
+    .user-name { font-size: 0.875rem; font-weight: 600; color: var(--text); }
+    .user-role { font-size: 0.72rem; color: var(--text2); }
+    .logout-btn {
+      width: 100%; padding: 0.65rem;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px; color: var(--danger); font-size: 0.8rem;
+      font-weight: 600; cursor: pointer; font-family: var(--font-body);
+      transition: all var(--transition);
+    }
+    .logout-btn:hover { background: rgba(239,68,68,0.2); }
+
+    /* ── MAIN CONTENT ── */
+    .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-width: 0; }
+    .top-bar {
+      position: sticky; top: 0; z-index: 5;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; border-bottom: 1px solid var(--border);
+      background: rgba(5,8,16,0.8); backdrop-filter: blur(20px);
+    }
+    .top-bar-title {
+      font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+      color: var(--text); letter-spacing: -0.02em;
+    }
+    .top-bar-right { display: flex; align-items: center; gap: 1rem; }
+    .save-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.55rem 1.2rem;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 10px; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; font-family: var(--font-body);
+      transition: all var(--transition);
+    }
+    .save-btn:hover { background: #3a7ae8; box-shadow: 0 6px 20px rgba(79,142,247,0.35); }
+    .save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .sidebar-toggle {
+      display: none; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.4rem 0.6rem; cursor: pointer; color: var(--text);
+      font-size: 1rem;
+    }
+
+    /* ── PAGE CONTENT ── */
+    .page { padding: 2rem; display: none; }
+    .page.active { display: block; }
+
+    /* Dashboard overview */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+      transition: all var(--transition);
+    }
+    .stat-card:hover { border-color: var(--border2); }
+    .stat-card-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .stat-card-value {
+      font-family: var(--font-display); font-size: 1.8rem; font-weight: 800;
+      color: var(--text); letter-spacing: -0.04em; margin-bottom: 0.25rem;
+    }
+    .stat-card-label { font-size: 0.8rem; color: var(--text2); }
+
+    /* ── FORM SECTIONS ── */
+    .form-section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .form-section-title {
+      font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+      color: var(--text); margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .field-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .field-label { font-size: 0.78rem; font-weight: 500; color: var(--text2); }
+    .field-input, .field-textarea, .field-select {
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 10px; padding: 0.75rem 1rem;
+      color: var(--text); font-family: var(--font-body); font-size: 0.875rem;
+      outline: none; transition: all var(--transition); resize: vertical;
+      width: 100%;
+    }
+    .field-input:focus, .field-textarea:focus, .field-select:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,142,247,0.15);
+    }
+    .field-textarea { min-height: 100px; }
+    .field-select { cursor: pointer; }
+    .field-input::placeholder, .field-textarea::placeholder { color: var(--text3); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+    /* ── LIST EDITORS ── */
+    .list-editor { display: flex; flex-direction: column; gap: 0.75rem; }
+    .list-item-card {
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 12px; padding: 1.25rem; position: relative;
+    }
+    .list-item-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .list-item-num {
+      font-family: var(--font-display); font-size: 0.8rem; font-weight: 700;
+      color: var(--accent); background: rgba(79,142,247,0.1);
+      padding: 0.2rem 0.6rem; border-radius: 100px;
+    }
+    .list-item-actions { display: flex; gap: 0.5rem; }
+    .btn-icon {
+      width: 32px; height: 32px; border-radius: 8px; border: none;
+      cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition);
+    }
+    .btn-delete { background: rgba(239,68,68,0.1); color: var(--danger); }
+    .btn-delete:hover { background: rgba(239,68,68,0.2); }
+    .btn-move { background: var(--surface3); color: var(--text2); }
+    .btn-move:hover { color: var(--text); }
+    .add-item-btn {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.25rem;
+      background: var(--surface); border: 1px dashed var(--border2);
+      border-radius: 12px; color: var(--text2); font-size: 0.85rem;
+      font-weight: 500; cursor: pointer; font-family: var(--font-body);
+      transition: all var(--transition); width: 100%; justify-content: center;
+    }
+    .add-item-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,0.05); }
+
+    /* ── ACHIEVEMENT EDITOR ── */
+    .achievement-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
+    .achievement-item { display: flex; gap: 0.5rem; }
+    .achievement-item input {
+      flex: 1; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.6rem 0.9rem;
+      color: var(--text); font-family: var(--font-body); font-size: 0.825rem;
+      outline: none; transition: all var(--transition);
+    }
+    .achievement-item input:focus { border-color: var(--accent); }
+    .achievement-item input::placeholder { color: var(--text3); }
+
+    /* ── IMAGE UPLOAD ── */
+    .image-upload-zone {
+      border: 2px dashed var(--border2); border-radius: 12px;
+      padding: 2rem; text-align: center; cursor: pointer;
+      transition: all var(--transition); position: relative; overflow: hidden;
+    }
+    .image-upload-zone:hover { border-color: var(--accent); background: rgba(79,142,247,0.03); }
+    .image-upload-zone.drag-over { border-color: var(--accent); background: rgba(79,142,247,0.08); }
+    .image-upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .upload-text { font-size: 0.875rem; color: var(--text2); }
+    .upload-hint { font-size: 0.75rem; color: var(--text3); margin-top: 0.25rem; }
+    .image-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); }
+
+    /* ── CONFIG MODAL ── */
+    .config-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .config-overlay.visible { display: flex; }
+    .config-modal {
+      background: var(--bg2); border: 1px solid var(--border2);
+      border-radius: 20px; padding: 2rem; width: 100%; max-width: 500px;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .config-title {
+      font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
+      color: var(--text); margin-bottom: 1.5rem;
+    }
+    .config-row { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .config-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+    .btn-cancel {
+      flex: 1; padding: 0.75rem;
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 10px; color: var(--text2); font-size: 0.875rem;
+      font-weight: 600; cursor: pointer; font-family: var(--font-body);
+      transition: all var(--transition);
+    }
+    .btn-cancel:hover { color: var(--text); }
+    .btn-connect {
+      flex: 1; padding: 0.75rem;
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 10px; font-size: 0.875rem;
+      font-weight: 600; cursor: pointer; font-family: var(--font-body);
+      transition: all var(--transition);
+    }
+    .btn-connect:hover { background: #3a7ae8; }
+
+    /* ── GITHUB STATUS ── */
+    .github-status {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; padding: 0.3rem 0.8rem; border-radius: 100px;
+      font-weight: 600;
+    }
+    .github-status.connected { color: var(--accent3); background: rgba(6,214,160,0.1); border: 1px solid rgba(6,214,160,0.2); }
+    .github-status.disconnected { color: var(--warning); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .status-dot.green { background: var(--accent3); }
+    .status-dot.yellow { background: var(--warning); }
+
+    /* ── TOAST ── */
+    .toast-container {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+      display: flex; flex-direction: column; gap: 0.75rem;
+    }
+    .toast {
+      padding: 0.875rem 1.25rem; border-radius: 12px;
+      background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text); font-size: 0.85rem; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      animation: toast-in 0.35s ease;
+      display: flex; align-items: center; gap: 0.75rem; min-width: 280px;
+    }
+    .toast.success { border-color: rgba(6,214,160,0.4); }
+    .toast.error { border-color: rgba(239,68,68,0.4); }
+    .toast.info { border-color: rgba(79,142,247,0.4); }
+    @keyframes toast-in { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform:translateX(0); } }
+
+    /* ── PROGRESS BAR ── */
+    .progress-overlay {
+      position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 9999;
+      background: var(--border); display: none;
+    }
+    .progress-bar {
+      height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 0; transition: width 0.3s ease;
+    }
+
+    /* ── SEARCH ── */
+    .search-input {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.6rem 1rem;
+      color: var(--text); font-family: var(--font-body); font-size: 0.85rem;
+      outline: none; transition: all var(--transition); width: 220px;
+    }
+    .search-input:focus { border-color: var(--accent); width: 280px; }
+    .search-input::placeholder { color: var(--text3); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed; top: 0; bottom: 0; left: 0;
+        transform: translateX(-100%); z-index: 50;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-toggle { display: flex; }
+      .field-row { grid-template-columns: 1fr; }
+      .field-row-3 { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-overlay" id="progressOverlay">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- ── LOGIN SCREEN ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">R<span>.</span>VM <span style="font-size:0.9rem;font-weight:500;color:var(--text2);">Admin</span></div>
+    <div class="login-subtitle">Secure dashboard — authorized access only</div>
+
+    <div id="login-error" class="login-error"></div>
+
+    <label class="login-label">Admin Password</label>
+    <input type="password" class="login-input" id="loginPassword" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
+
+    <button class="login-btn" onclick="doLogin()">🔐 Access Dashboard</button>
+
+    <div class="login-hint">
+      Default password: <strong>admin123</strong><br>
+      Change this in Settings after login.
+    </div>
+  </div>
+</div>
+
+<!-- ── APP SHELL ── -->
+<div id="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">R<span>.</span>VM</div>
+      <div class="sidebar-logo-sub">Portfolio Admin</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Content</div>
+      <div class="nav-item active" onclick="switchPage('dashboard',this)">
+        <span class="nav-item-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="switchPage('profile',this)">
+        <span class="nav-item-icon">👤</span> Profile
+      </div>
+      <div class="nav-item" onclick="switchPage('experience',this)">
+        <span class="nav-item-icon">💼</span> Experience
+      </div>
+      <div class="nav-item" onclick="switchPage('skills',this)">
+        <span class="nav-item-icon">⚡</span> Skills
+      </div>
+      <div class="nav-item" onclick="switchPage('projects',this)">
+        <span class="nav-item-icon">🚀</span> Projects
+      </div>
+      <div class="nav-item" onclick="switchPage('education',this)">
+        <span class="nav-item-icon">🎓</span> Education
+      </div>
+      <div class="nav-item" onclick="switchPage('contact',this)">
+        <span class="nav-item-icon">📬</span> Contact
+      </div>
+      <div class="nav-section-label" style="margin-top:1rem;">System</div>
+      <div class="nav-item" onclick="switchPage('github',this)">
+        <span class="nav-item-icon">🔗</span> GitHub Config
+      </div>
+      <div class="nav-item" onclick="switchPage('settings',this)">
+        <span class="nav-item-icon">⚙️</span> Settings
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-row">
+        <div class="user-avatar">A</div>
+        <div>
+          <div class="user-name">Admin</div>
+          <div class="user-role">Super Admin</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="top-bar-title" id="page-title">Dashboard</div>
+      </div>
+      <div class="top-bar-right">
+        <div id="github-badge" class="github-status disconnected">
+          <span class="status-dot yellow"></span> Not Connected
+        </div>
+        <button class="save-btn" id="save-btn" onclick="saveCurrentPage()" disabled>
+          💾 Save & Push
+        </button>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARD PAGE ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-card-icon">👤</div><div class="stat-card-value">1</div><div class="stat-card-label">Profile</div></div>
+        <div class="stat-card"><div class="stat-card-icon">💼</div><div class="stat-card-value" id="stat-exp">-</div><div class="stat-card-label">Jobs</div></div>
+        <div class="stat-card"><div class="stat-card-icon">🚀</div><div class="stat-card-value" id="stat-proj">-</div><div class="stat-card-label">Projects</div></div>
+        <div class="stat-card"><div class="stat-card-icon">⚡</div><div class="stat-card-value" id="stat-skills">-</div><div class="stat-card-label">Skill Categories</div></div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">🚀 Quick Actions</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.75rem;">
+          <button class="add-item-btn" style="width:auto;padding:0.65rem 1.25rem;" onclick="switchPage('profile',document.querySelector('[onclick*=profile]'))">Edit Profile</button>
+          <button class="add-item-btn" style="width:auto;padding:0.65rem 1.25rem;" onclick="switchPage('experience',document.querySelector('[onclick*=experience]'))">Edit Experience</button>
+          <button class="add-item-btn" style="width:auto;padding:0.65rem 1.25rem;" onclick="switchPage('projects',document.querySelector('[onclick*=projects]'))">Edit Projects</button>
+          <button class="add-item-btn" style="width:auto;padding:0.65rem 1.25rem;" onclick="window.open('../index.html','_blank')">View Live Site ↗</button>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">📋 Getting Started</div>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.875rem;color:var(--text2);" id="step-github">
+            <span id="step-github-icon">⭕</span> Configure GitHub API (GitHub Config page)
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.875rem;color:var(--text2);">
+            <span>2️⃣</span> Edit your content using the sidebar pages
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.875rem;color:var(--text2);">
+            <span>3️⃣</span> Click "Save & Push" to deploy changes to GitHub
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.875rem;color:var(--text2);">
+            <span>4️⃣</span> Your GitHub Pages site updates automatically!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE PAGE ── -->
+    <div class="page" id="page-profile">
+      <div class="form-section">
+        <div class="form-section-title">👤 Personal Information</div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Full Name</label><input type="text" class="field-input" id="p-name"></div>
+          <div class="field-group"><label class="field-label">Job Title</label><input type="text" class="field-input" id="p-title"></div>
+        </div>
+        <div class="field-group"><label class="field-label">Tagline / Hero Subtitle</label><input type="text" class="field-input" id="p-tagline"></div>
+        <div class="field-group"><label class="field-label">About / Bio</label><textarea class="field-textarea" id="p-about" style="min-height:120px;"></textarea></div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Email</label><input type="email" class="field-input" id="p-email"></div>
+          <div class="field-group"><label class="field-label">Phone</label><input type="text" class="field-input" id="p-phone"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Location</label><input type="text" class="field-input" id="p-location"></div>
+          <div class="field-group"><label class="field-label">LinkedIn URL</label><input type="text" class="field-input" id="p-linkedin"></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">📊 Hero Stats</div>
+        <div id="hero-stats-editor" class="list-editor"></div>
+        <button class="add-item-btn" onclick="addHeroStat()">+ Add Stat</button>
+      </div>
+    </div>
+
+    <!-- ── EXPERIENCE PAGE ── -->
+    <div class="page" id="page-experience">
+      <div id="experience-editor" class="list-editor"></div>
+      <button class="add-item-btn" onclick="addExperienceItem()">+ Add Job</button>
+    </div>
+
+    <!-- ── SKILLS PAGE ── -->
+    <div class="page" id="page-skills">
+      <div id="skills-editor" class="list-editor"></div>
+      <button class="add-item-btn" onclick="addSkillCategory()">+ Add Category</button>
+    </div>
+
+    <!-- ── PROJECTS PAGE ── -->
+    <div class="page" id="page-projects">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+        <input type="text" class="search-input" placeholder="🔍 Search projects..." oninput="filterProjects(this.value)">
+      </div>
+      <div id="projects-editor" class="list-editor"></div>
+      <button class="add-item-btn" onclick="addProject()">+ Add Project</button>
+    </div>
+
+    <!-- ── EDUCATION PAGE ── -->
+    <div class="page" id="page-education">
+      <div class="form-section">
+        <div class="form-section-title">🏛 Education</div>
+        <div id="edu-editor" class="list-editor"></div>
+        <button class="add-item-btn" onclick="addEducation()">+ Add Education</button>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">📜 Certifications</div>
+        <div id="cert-editor" class="list-editor"></div>
+        <button class="add-item-btn" onclick="addCertification()">+ Add Certification</button>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">🗣 Languages</div>
+        <div id="lang-editor" class="list-editor"></div>
+        <button class="add-item-btn" onclick="addLanguage()">+ Add Language</button>
+      </div>
+    </div>
+
+    <!-- ── CONTACT PAGE ── -->
+    <div class="page" id="page-contact">
+      <div class="form-section">
+        <div class="form-section-title">📬 Contact Details</div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Email</label><input type="email" class="field-input" id="c-email"></div>
+          <div class="field-group"><label class="field-label">Phone</label><input type="text" class="field-input" id="c-phone"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Location</label><input type="text" class="field-input" id="c-location"></div>
+          <div class="field-group"><label class="field-label">LinkedIn URL</label><input type="text" class="field-input" id="c-linkedin"></div>
+        </div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label">Availability Status</label><input type="text" class="field-input" id="c-availability"></div>
+          <div class="field-group"><label class="field-label">Response Time</label><input type="text" class="field-input" id="c-response"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GITHUB CONFIG PAGE ── -->
+    <div class="page" id="page-github">
+      <div class="form-section">
+        <div class="form-section-title">🔗 GitHub API Configuration</div>
+        <p style="font-size:0.85rem;color:var(--text2);margin-bottom:1.5rem;line-height:1.7;">
+          Connect your GitHub repository to enable permanent content saving. All edits will be committed directly to your repo and published on GitHub Pages automatically.<br><br>
+          <strong style="color:var(--text);">How to get a token:</strong> GitHub → Settings → Developer settings → Personal access tokens → Generate new token (classic) → Select <code style="background:var(--bg3);padding:0.1rem 0.4rem;border-radius:4px;">repo</code> scope.
+        </p>
+        <div class="field-group">
+          <label class="field-label">GitHub Personal Access Token</label>
+          <input type="password" class="field-input" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">GitHub Username</label>
+            <input type="text" class="field-input" id="gh-user" placeholder="your-username">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Repository Name</label>
+            <input type="text" class="field-input" id="gh-repo" placeholder="rashiq-portfolio">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Branch</label>
+          <input type="text" class="field-input" id="gh-branch" placeholder="main" value="main">
+        </div>
+        <div style="display:flex;gap:0.75rem;margin-top:1rem;">
+          <button class="save-btn" onclick="saveGitHubConfig()">💾 Save Config</button>
+          <button class="save-btn" style="background:var(--surface);color:var(--text);border:1px solid var(--border2);" onclick="testGitHubConnection()">🔌 Test Connection</button>
+        </div>
+      </div>
+      <div class="form-section" id="gh-status-section" style="display:none;">
+        <div class="form-section-title">📡 Connection Status</div>
+        <div id="gh-status-text" style="font-size:0.875rem;color:var(--text2);"></div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS PAGE ── -->
+    <div class="page" id="page-settings">
+      <div class="form-section">
+        <div class="form-section-title">🔐 Admin Password</div>
+        <div class="field-group">
+          <label class="field-label">Current Password</label>
+          <input type="password" class="field-input" id="curr-pass" placeholder="Current password">
+        </div>
+        <div class="field-group">
+          <label class="field-label">New Password</label>
+          <input type="password" class="field-input" id="new-pass" placeholder="New password">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Confirm New Password</label>
+          <input type="password" class="field-input" id="conf-pass" placeholder="Confirm new password">
+        </div>
+        <button class="save-btn" onclick="changePassword()">Update Password</button>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">⚠️ Danger Zone</div>
+        <button class="save-btn" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:var(--danger);" onclick="clearAllData()">🗑 Clear All Saved Data</button>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app -->
+
+<!-- Toast -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ╔══════════════════════════════════════════════╗
+// ║           STATE & CONSTANTS                  ║
+// ╚══════════════════════════════════════════════╝
+const ADMIN_PASS_KEY = 'rvm_admin_pass';
+const GH_CONFIG_KEY  = 'rvm_gh_config';
+const DATA_CACHE_KEY = 'rvm_data_cache';
+const DEFAULT_PASS   = 'admin123';
+
+let currentPage = 'dashboard';
+let dataCache   = {};
+let ghConfig    = {};
+
+// ╔══════════════════════════════════════════════╗
+// ║           AUTH                               ║
+// ╚══════════════════════════════════════════════╝
+function doLogin() {
+  const pass = document.getElementById('loginPassword').value;
+  const stored = localStorage.getItem(ADMIN_PASS_KEY) || DEFAULT_PASS;
+  if (pass === stored) {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    initApp();
+  } else {
+    const err = document.getElementById('login-error');
+    err.textContent = 'Incorrect password. Please try again.';
+    err.style.display = 'block';
+    setTimeout(()=>err.style.display='none', 3000);
+  }
+}
+
+function doLogout() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('loginPassword').value = '';
+}
+
+function changePassword() {
+  const curr = document.getElementById('curr-pass').value;
+  const nw = document.getElementById('new-pass').value;
+  const cf = document.getElementById('conf-pass').value;
+  const stored = localStorage.getItem(ADMIN_PASS_KEY) || DEFAULT_PASS;
+  if (curr !== stored) { showToast('Current password incorrect.','error'); return; }
+  if (nw !== cf)       { showToast('Passwords do not match.','error'); return; }
+  if (nw.length < 6)   { showToast('Password must be at least 6 characters.','error'); return; }
+  localStorage.setItem(ADMIN_PASS_KEY, nw);
+  showToast('Password updated successfully!','success');
+}
+
+// ╔══════════════════════════════════════════════╗
+// ║           NAVIGATION                         ║
+// ╚══════════════════════════════════════════════╝
+function switchPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  currentPage = name;
+  document.getElementById('page-title').textContent =
+    name.charAt(0).toUpperCase() + name.slice(1);
+  document.getElementById('save-btn').disabled =
+    (name === 'dashboard' || name === 'github' || name === 'settings');
+  // Close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+  // Render page
+  renderPage(name);
+}
+
+// ╔══════════════════════════════════════════════╗
+// ║           INIT                               ║
+// ╚══════════════════════════════════════════════╝
+async function initApp() {
+  ghConfig = JSON.parse(localStorage.getItem(GH_CONFIG_KEY) || '{}');
+  await loadAllData();
+  updateGitHubBadge();
+  updateDashboardStats();
+  loadGitHubForm();
+}
+
+async function loadAllData() {
+  const files = ['profile','skills','experience','projects','education','contact'];
+  for(const f of files) {
+    const cached = getCachedData(f);
+    if(cached) { dataCache[f] = cached; continue; }
+    try {
+      const res = await fetch(`./data/${f}.json?v=${Date.now()}`);
+      if(res.ok) { dataCache[f] = await res.json(); setCachedData(f, dataCache[f]); }
+    } catch(e) { console.warn('Could not load', f); }
+  }
+}
+
+function getCachedData(key) {
+  try {
+    const c = JSON.parse(localStorage.getItem(DATA_CACHE_KEY) || '{}');
+    return c[key] || null;
+  } catch { return null; }
+}
+
+function setCachedData(key, val) {
+  try {
+    const c = JSON.parse(localStorage.getItem(DATA_CACHE_KEY) || '{}');
+    c[key] = val;
+    localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(c));
+  } catch(e) {}
+}
+
+function clearAllData() {
+  if(!confirm('This will clear all locally cached data. Continue?')) return;
+  localStorage.removeItem(DATA_CACHE_KEY);
+  dataCache = {};
+  showToast('Cache cleared. Reload to fetch fresh data.','info');
+}
+
+// ╔══════════════════════════════════════════════╗
+// ║           RENDER PAGES                       ║
+// ╚══════════════════════════════════════════════╝
+function renderPage(name) {
+  switch(name) {
+    case 'profile':    renderProfilePage(); break;
+    case 'experience': renderExperiencePage(); break;
+    case 'skills':     renderSkillsPage(); break;
+    case 'projects':   renderProjectsPage(); break;
+    case 'education':  renderEducationPage(); break;
+    case 'contact':    renderContactPage(); break;
+  }
+}
+
+// ── PROFILE ──
+function renderProfilePage() {
+  const d = dataCache.profile || {};
+  document.getElementById('p-name').value = d.name||'';
+  document.getElementById('p-title').value = d.title||'';
+  document.getElementById('p-tagline').value = d.tagline||'';
+  document.getElementById('p-about').value = d.about||'';
+  document.getElementById('p-email').value = d.email||'';
+  document.getElementById('p-phone').value = d.phone||'';
+  document.getElementById('p-location').value = d.location||'';
+  document.getElementById('p-linkedin').value = d.linkedin||'';
+
+  const stats = d.heroStats || [];
+  const el = document.getElementById('hero-stats-editor');
+  el.innerHTML = stats.map((s,i) => `
+    <div class="list-item-card">
+      <div class="list-item-header">
+        <span class="list-item-num">Stat ${i+1}</span>
+        <div class="list-item-actions">
+          <button class="btn-icon btn-delete" onclick="removeHeroStat(${i})">🗑</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Value (e.g. 7+)</label><input class="field-input" value="${s.value||''}" data-stat="${i}" data-field="value"></div>
+        <div class="field-group"><label class="field-label">Label</label><input class="field-input" value="${s.label||''}" data-stat="${i}" data-field="label"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addHeroStat() {
+  if (!dataCache.profile) dataCache.profile = {};
+  if (!dataCache.profile.heroStats) dataCache.profile.heroStats = [];
+  dataCache.profile.heroStats.push({value:'0',label:'New Stat'});
+  renderProfilePage();
+}
+function removeHeroStat(i) {
+  dataCache.profile.heroStats.splice(i,1);
+  renderProfilePage();
+}
+
+function collectProfileData() {
+  if (!dataCache.profile) dataCache.profile = {};
+  dataCache.profile.name = document.getElementById('p-name').value;
+  dataCache.profile.title = document.getElementById('p-title').value;
+  dataCache.profile.tagline = document.getElementById('p-tagline').value;
+  dataCache.profile.about = document.getElementById('p-about').value;
+  dataCache.profile.email = document.getElementById('p-email').value;
+  dataCache.profile.phone = document.getElementById('p-phone').value;
+  dataCache.profile.location = document.getElementById('p-location').value;
+  dataCache.profile.linkedin = document.getElementById('p-linkedin').value;
+  // Collect stats
+  document.querySelectorAll('[data-stat]').forEach(el => {
+    const i = parseInt(el.dataset.stat);
+    const field = el.dataset.field;
+    if (dataCache.profile.heroStats && dataCache.profile.heroStats[i])
+      dataCache.profile.heroStats[i][field] = el.value;
+  });
+  return dataCache.profile;
+}
+
+// ── EXPERIENCE ──
+function renderExperiencePage() {
+  const jobs = (dataCache.experience||{}).jobs || [];
+  const el = document.getElementById('experience-editor');
+  el.innerHTML = jobs.map((j,i) => `
+    <div class="list-item-card">
+      <div class="list-item-header">
+        <span class="list-item-num">${j.current?'🟢 ':''} Job ${i+1}</span>
+        <div class="list-item-actions">
+          <button class="btn-icon btn-delete" onclick="removeJob(${i})">🗑</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Company</label><input class="field-input" value="${j.company||''}" data-job="${i}" data-field="company"></div>
+        <div class="field-group"><label class="field-label">Role</label><input class="field-input" value="${j.role||''}" data-job="${i}" data-field="role"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Period</label><input class="field-input" value="${j.period||''}" data-job="${i}" data-field="period"></div>
+        <div class="field-group"><label class="field-label">Location</label><input class="field-input" value="${j.location||''}" data-job="${i}" data-field="location"></div>
+      </div>
+      <div class="field-group"><label class="field-label">Description</label><textarea class="field-textarea" style="min-height:70px;" data-job="${i}" data-field="description">${j.description||''}</textarea></div>
+      <div class="field-group">
+        <label class="field-label">Current Position</label>
+        <select class="field-select" data-job="${i}" data-field="current">
+          <option value="true" ${j.current?'selected':''}>Yes</option>
+          <option value="false" ${!j.current?'selected':''}>No</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Achievements (one per line)</label>
+        <textarea class="field-textarea" data-job="${i}" data-field="achievements">${(j.achievements||[]).join('\n')}</textarea>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addExperienceItem() {
+  if (!dataCache.experience) dataCache.experience = {jobs:[]};
+  dataCache.experience.jobs.unshift({id:Date.now(),company:'New Company',role:'Role',period:'2024–Present',location:'City',current:false,description:'',achievements:[]});
+  renderExperiencePage();
+}
+function removeJob(i) {
+  if(!confirm('Remove this job?')) return;
+  dataCache.experience.jobs.splice(i,1);
+  renderExperiencePage();
+}
+function collectExperienceData() {
+  const jobs = (dataCache.experience||{}).jobs||[];
+  document.querySelectorAll('[data-job]').forEach(el => {
+    const i = parseInt(el.dataset.job);
+    const field = el.dataset.field;
+    if (!jobs[i]) return;
+    if (field === 'achievements') jobs[i][field] = el.value.split('\n').filter(s=>s.trim());
+    else if (field === 'current') jobs[i][field] = el.value === 'true';
+    else jobs[i][field] = el.value;
+  });
+  return {jobs};
+}
+
+// ── SKILLS ──
+function renderSkillsPage() {
+  const cats = (dataCache.skills||{}).categories || [];
+  const el = document.getElementById('skills-editor');
+  el.innerHTML = cats.map((c,i) => `
+    <div class="list-item-card">
+      <div class="list-item-header">
+        <span class="list-item-num">Category ${i+1}</span>
+        <div class="list-item-actions">
+          <button class="btn-icon btn-delete" onclick="removeSkillCat(${i})">🗑</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Name</label><input class="field-input" value="${c.name||''}" data-cat="${i}" data-field="name"></div>
+        <div class="field-group"><label class="field-label">Icon (emoji)</label><input class="field-input" value="${c.icon||''}" data-cat="${i}" data-field="icon" style="width:100px;"></div>
+      </div>
+      <div class="field-group"><label class="field-label">Skills (comma-separated)</label><input class="field-input" value="${(c.skills||[]).join(', ')}" data-cat="${i}" data-field="skills"></div>
+    </div>
+  `).join('');
+}
+
+function addSkillCategory() {
+  if (!dataCache.skills) dataCache.skills = {categories:[]};
+  dataCache.skills.categories.push({id:'new_'+Date.now(),name:'New Category',icon:'🔧',skills:[]});
+  renderSkillsPage();
+}
+function removeSkillCat(i) {
+  dataCache.skills.categories.splice(i,1);
+  renderSkillsPage();
+}
+function collectSkillsData() {
+  const cats = (dataCache.skills||{}).categories||[];
+  document.querySelectorAll('[data-cat]').forEach(el => {
+    const i = parseInt(el.dataset.cat);
+    const field = el.dataset.field;
+    if (!cats[i]) return;
+    if (field === 'skills') cats[i][field] = el.value.split(',').map(s=>s.trim()).filter(Boolean);
+    else cats[i][field] = el.value;
+  });
+  return {categories: cats};
+}
+
+// ── PROJECTS ──
+function renderProjectsPage(filter='') {
+  const projects = (dataCache.projects||{}).projects || [];
+  const filtered = filter ? projects.filter(p =>
+    p.title.toLowerCase().includes(filter) || p.category.toLowerCase().includes(filter)
+  ) : projects;
+  const el = document.getElementById('projects-editor');
+  el.innerHTML = filtered.map((p,i) => {
+    const realI = projects.indexOf(p);
+    return `
+    <div class="list-item-card">
+      <div class="list-item-header">
+        <span class="list-item-num">${p.featured?'⭐ ':''}Project ${realI+1}</span>
+        <div class="list-item-actions">
+          <button class="btn-icon btn-delete" onclick="removeProject(${realI})">🗑</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Title</label><input class="field-input" value="${p.title||''}" data-proj="${realI}" data-field="title"></div>
+        <div class="field-group"><label class="field-label">Category</label><input class="field-input" value="${p.category||''}" data-proj="${realI}" data-field="category"></div>
+      </div>
+      <div class="field-group"><label class="field-label">Description</label><textarea class="field-textarea" style="min-height:80px;" data-proj="${realI}" data-field="description">${p.description||''}</textarea></div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Tags (comma-separated)</label><input class="field-input" value="${(p.tags||[]).join(', ')}" data-proj="${realI}" data-field="tags"></div>
+        <div class="field-group"><label class="field-label">Featured</label>
+          <select class="field-select" data-proj="${realI}" data-field="featured">
+            <option value="true" ${p.featured?'selected':''}>Yes</option>
+            <option value="false" ${!p.featured?'selected':''}>No</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Image URL (or upload below)</label>
+        <input class="field-input" value="${p.image||''}" data-proj="${realI}" data-field="image" placeholder="https://... or /assets/images/project.jpg">
+      </div>
+      <div class="image-upload-zone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleImageDrop(event,${realI})">
+        <input type="file" accept="image/*" onchange="handleImageFile(this,${realI})">
+        <div class="upload-icon">🖼</div>
+        <div class="upload-text">Drop image here or click to browse</div>
+        <div class="upload-hint">PNG, JPG, WebP supported</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterProjects(val) { renderProjectsPage(val.toLowerCase()); }
+function addProject() {
+  if (!dataCache.projects) dataCache.projects = {projects:[]};
+  dataCache.projects.projects.push({id:Date.now(),title:'New Project',category:'General',description:'',tags:[],image:'',featured:false});
+  renderProjectsPage();
+}
+function removeProject(i) {
+  if(!confirm('Remove this project?')) return;
+  dataCache.projects.projects.splice(i,1);
+  renderProjectsPage();
+}
+function collectProjectsData() {
+  const projs = (dataCache.projects||{}).projects||[];
+  document.querySelectorAll('[data-proj]').forEach(el => {
+    const i = parseInt(el.dataset.proj);
+    const field = el.dataset.field;
+    if (!projs[i]) return;
+    if (field === 'tags') projs[i][field] = el.value.split(',').map(s=>s.trim()).filter(Boolean);
+    else if (field === 'featured') projs[i][field] = el.value === 'true';
+    else projs[i][field] = el.value;
+  });
+  return {projects: projs};
+}
+
+// Image upload handlers
+function handleImageFile(input, projIndex) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    // Store as data URL (base64) — for GitHub upload store path
+    const path = `assets/images/${file.name}`;
+    const b64 = e.target.result.split(',')[1];
+    // Store for GitHub push
+    if (!window._pendingImages) window._pendingImages = {};
+    window._pendingImages[path] = b64;
+    if (dataCache.projects && dataCache.projects.projects[projIndex])
+      dataCache.projects.projects[projIndex].image = path;
+    showToast(`Image queued: ${file.name}. Save & Push to deploy.`, 'info');
+    renderProjectsPage();
+  };
+  reader.readAsDataURL(file);
+}
+function handleImageDrop(event, projIndex) {
+  event.preventDefault();
+  event.currentTarget.classList.remove('drag-over');
+  const file = event.dataTransfer.files[0];
+  if (!file) return;
+  handleImageFile({files:[file]}, projIndex);
+}
+
+// ── EDUCATION ──
+function renderEducationPage() {
+  const d = dataCache.education || {education:[],certifications:[],languages:[]};
+
+  document.getElementById('edu-editor').innerHTML = (d.education||[]).map((e,i) => `
+    <div class="list-item-card">
+      <div class="list-item-header">
+        <span class="list-item-num">Edu ${i+1}</span>
+        <div class="list-item-actions"><button class="btn-icon btn-delete" onclick="removeEdu(${i})">🗑</button></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Institution</label><input class="field-input" value="${e.institution||''}" data-edu="${i}" data-field="institution"></div>
+        <div class="field-group"><label class="field-label">Degree</label><input class="field-input" value="${e.degree||''}" data-edu="${i}" data-field="degree"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Year</label><input class="field-input" value="${e.year||''}" data-edu="${i}" data-field="year"></div>
+        <div class="field-group"><label class="field-label">Location</label><input class="field-input" value="${e.location||''}" data-edu="${i}" data-field="location"></div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('cert-editor').innerHTML = (d.certifications||[]).map((c,i) => `
+    <div class="list-item-card">
+      <div class="list-item-header">
+        <span class="list-item-num">Cert ${i+1}</span>
+        <div class="list-item-actions"><button class="btn-icon btn-delete" onclick="removeCert(${i})">🗑</button></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Name</label><input class="field-input" value="${c.name||''}" data-cert="${i}" data-field="name"></div>
+        <div class="field-group"><label class="field-label">Issuer</label><input class="field-input" value="${c.issuer||''}" data-cert="${i}" data-field="issuer"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label class="field-label">Year</label><input class="field-input" value="${c.year||''}" data-cert="${i}" data-field="year"></div>
+        <div class="field-group"><label class="field-label">Location</label><input class="field-input" value="${c.location||''}" data-cert="${i}" data-field="location"></div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('lang-editor').innerHTML = (d.languages||[]).map((l,i) => `
+    <div class="list-item-card">
+      <div class="list-item-header">
+        <span class="list-item-num">Lang ${i+1}</span>
+        <div class="list-item-actions"><button class="btn-icon btn-delete" onclick="removeLang(${i})">🗑</button></div>
+      </div>
+      <div class="field-row-3">
+        <div class="field-group"><label class="field-label">Language</label><input class="field-input" value="${l.name||''}" data-lang="${i}" data-field="name"></div>
+        <div class="field-group"><label class="field-label">Level</label><input class="field-input" value="${l.level||''}" data-lang="${i}" data-field="level"></div>
+        <div class="field-group"><label class="field-label">Percent (0-100)</label><input type="number" class="field-input" value="${l.percent||50}" min="0" max="100" data-lang="${i}" data-field="percent"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addEducation() {
+  if(!dataCache.education) dataCache.education={education:[],certifications:[],languages:[]};
+  dataCache.education.education.push({id:Date.now(),institution:'',degree:'',year:'',location:''});
+  renderEducationPage();
+}
+function addCertification() {
+  if(!dataCache.education) dataCache.education={education:[],certifications:[],languages:[]};
+  dataCache.education.certifications.push({id:Date.now(),name:'',issuer:'',year:'',location:''});
+  renderEducationPage();
+}
+function addLanguage() {
+  if(!dataCache.education) dataCache.education={education:[],certifications:[],languages:[]};
+  dataCache.education.languages.push({name:'',level:'Beginner',percent:30});
+  renderEducationPage();
+}
+function removeEdu(i) { dataCache.education.education.splice(i,1); renderEducationPage(); }
+function removeCert(i) { dataCache.education.certifications.splice(i,1); renderEducationPage(); }
+function removeLang(i) { dataCache.education.languages.splice(i,1); renderEducationPage(); }
+
+function collectEducationData() {
+  const d = dataCache.education || {education:[],certifications:[],languages:[]};
+  document.querySelectorAll('[data-edu]').forEach(el => {
+    const i=parseInt(el.dataset.edu); if(!d.education[i]) return;
+    d.education[i][el.dataset.field] = el.value;
+  });
+  document.querySelectorAll('[data-cert]').forEach(el => {
+    const i=parseInt(el.dataset.cert); if(!d.certifications[i]) return;
+    d.certifications[i][el.dataset.field] = el.value;
+  });
+  document.querySelectorAll('[data-lang]').forEach(el => {
+    const i=parseInt(el.dataset.lang); if(!d.languages[i]) return;
+    const v = el.dataset.field==='percent' ? parseInt(el.value) : el.value;
+    d.languages[i][el.dataset.field] = v;
+  });
+  return d;
+}
+
+// ── CONTACT ──
+function renderContactPage() {
+  const d = dataCache.contact || {};
+  document.getElementById('c-email').value = d.email||'';
+  document.getElementById('c-phone').value = d.phone||'';
+  document.getElementById('c-location').value = d.location||'';
+  document.getElementById('c-linkedin').value = d.linkedin||'';
+  document.getElementById('c-availability').value = d.availability||'';
+  document.getElementById('c-response').value = d.responseTime||'';
+}
+function collectContactData() {
+  return {
+    email: document.getElementById('c-email').value,
+    phone: document.getElementById('c-phone').value,
+    location: document.getElementById('c-location').value,
+    linkedin: document.getElementById('c-linkedin').value,
+    availability: document.getElementById('c-availability').value,
+    responseTime: document.getElementById('c-response').value,
+  };
+}
+
+// ╔══════════════════════════════════════════════╗
+// ║           SAVE & GITHUB API                  ║
+// ╚══════════════════════════════════════════════╝
+async function saveCurrentPage() {
+  const btn = document.getElementById('save-btn');
+  const pageDataMap = {
+    profile:    { key:'profile',    collect: collectProfileData,    file:'data/profile.json' },
+    experience: { key:'experience', collect: collectExperienceData, file:'data/experience.json' },
+    skills:     { key:'skills',     collect: collectSkillsData,     file:'data/skills.json' },
+    projects:   { key:'projects',   collect: collectProjectsData,   file:'data/projects.json' },
+    education:  { key:'education',  collect: collectEducationData,  file:'data/education.json' },
+    contact:    { key:'contact',    collect: collectContactData,    file:'data/contact.json' },
+  };
+  const cfg = pageDataMap[currentPage];
+  if (!cfg) return;
+
+  const data = cfg.collect();
+  dataCache[cfg.key] = data;
+  setCachedData(cfg.key, data);
+
+  if (!ghConfig.token || !ghConfig.user || !ghConfig.repo) {
+    showToast('⚠️ GitHub not configured. Data saved locally only.', 'info');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Pushing...';
+  showProgress(30);
+
+  try {
+    // Push pending images first
+    if (window._pendingImages) {
+      for (const [path, b64] of Object.entries(window._pendingImages)) {
+        await pushFileToGitHub(path, b64, `Upload image: ${path}`, true);
+      }
+      window._pendingImages = {};
+    }
+    showProgress(60);
+    const json = JSON.stringify(data, null, 2);
+    const b64 = btoa(unescape(encodeURIComponent(json)));
+    await pushFileToGitHub(cfg.file, b64, `Update ${cfg.key} via admin dashboard`);
+    showProgress(100);
+    showToast('✅ Saved & pushed to GitHub! Site will update shortly.', 'success');
+  } catch(e) {
+    showToast('❌ GitHub push failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 Save & Push';
+    setTimeout(hideProgress, 800);
+  }
+}
+
+async function pushFileToGitHub(filePath, base64Content, message, isImage=false) {
+  const apiUrl = `https://api.github.com/repos/${ghConfig.user}/${ghConfig.repo}/contents/${filePath}`;
+  // Get current SHA
+  let sha = null;
+  try {
+    const r = await fetch(apiUrl + `?ref=${ghConfig.branch||'main'}`, {
+      headers: { 'Authorization': `token ${ghConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (r.ok) { const d = await r.json(); sha = d.sha; }
+  } catch(e) {}
+
+  const body = {
+    message,
+    content: base64Content,
+    branch: ghConfig.branch || 'main',
+  };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(apiUrl, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `token ${ghConfig.token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || 'GitHub API error');
+  }
+  return await res.json();
+}
+
+// ── GITHUB CONFIG ──
+function loadGitHubForm() {
+  document.getElementById('gh-token').value = ghConfig.token ? '••••••••••••••••' : '';
+  document.getElementById('gh-user').value = ghConfig.user || '';
+  document.getElementById('gh-repo').value = ghConfig.repo || '';
+  document.getElementById('gh-branch').value = ghConfig.branch || 'main';
+}
+
+function saveGitHubConfig() {
+  const token = document.getElementById('gh-token').value;
+  const user  = document.getElementById('gh-user').value.trim();
+  const repo  = document.getElementById('gh-repo').value.trim();
+  const branch = document.getElementById('gh-branch').value.trim() || 'main';
+  if (!user || !repo) { showToast('Username and repo name required.','error'); return; }
+  if (token && !token.startsWith('•')) ghConfig.token = token;
+  ghConfig.user   = user;
+  ghConfig.repo   = repo;
+  ghConfig.branch = branch;
+  localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(ghConfig));
+  updateGitHubBadge();
+  showToast('GitHub config saved!', 'success');
+}
+
+async function testGitHubConnection() {
+  if (!ghConfig.token || !ghConfig.user || !ghConfig.repo) {
+    showToast('Save config first.','error'); return;
+  }
+  showToast('Testing connection...','info');
+  try {
+    const res = await fetch(`https://api.github.com/repos/${ghConfig.user}/${ghConfig.repo}`, {
+      headers: { 'Authorization': `token ${ghConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('gh-status-section').style.display = 'block';
+      document.getElementById('gh-status-text').innerHTML = `
+        ✅ Connected! Repo: <strong style="color:var(--accent)">${data.full_name}</strong><br>
+        Visibility: ${data.private ? '🔒 Private' : '🌐 Public'}<br>
+        Branch: ${ghConfig.branch}<br>
+        GitHub Pages URL: <a href="https://${ghConfig.user}.github.io/${ghConfig.repo}" target="_blank" style="color:var(--accent);">https://${ghConfig.user}.github.io/${ghConfig.repo}</a>
+      `;
+      updateGitHubBadge(true);
+      showToast('✅ Connected to GitHub!','success');
+    } else {
+      showToast('❌ ' + (data.message || 'Connection failed'), 'error');
+    }
+  } catch(e) {
+    showToast('❌ Network error: ' + e.message,'error');
+  }
+}
+
+function updateGitHubBadge(connected=null) {
+  const isConnected = connected ?? (ghConfig.token && ghConfig.user && ghConfig.repo);
+  const badge = document.getElementById('github-badge');
+  if (isConnected) {
+    badge.className = 'github-status connected';
+    badge.innerHTML = '<span class="status-dot green"></span> GitHub Connected';
+    document.getElementById('step-github-icon').textContent = '✅';
+  } else {
+    badge.className = 'github-status disconnected';
+    badge.innerHTML = '<span class="status-dot yellow"></span> Not Connected';
+  }
+}
+
+function updateDashboardStats() {
+  const expJobs = (dataCache.experience||{}).jobs||[];
+  const projs = (dataCache.projects||{}).projects||[];
+  const skills = (dataCache.skills||{}).categories||[];
+  document.getElementById('stat-exp').textContent = expJobs.length;
+  document.getElementById('stat-proj').textContent = projs.length;
+  document.getElementById('stat-skills').textContent = skills.length;
+}
+
+// ╔══════════════════════════════════════════════╗
+// ║           UI UTILITIES                       ║
+// ╚══════════════════════════════════════════════╝
+function showToast(msg, type='success') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = {success:'✅', error:'❌', info:'ℹ️'};
+  t.innerHTML = `<span>${icons[type]||''}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 5000);
+}
+
+function showProgress(pct) {
+  document.getElementById('progressOverlay').style.display='block';
+  document.getElementById('progressBar').style.width = pct+'%';
+}
+function hideProgress() {
+  document.getElementById('progressOverlay').style.display='none';
+  document.getElementById('progressBar').style.width='0';
+}
+</script>
+</body>
+</html>

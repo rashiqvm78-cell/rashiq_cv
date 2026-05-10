@@ -1,0 +1,40 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "Enterprise Network Infrastructure Setup",
+      "category": "Networking",
+      "description": "Designed and deployed a complete network infrastructure for a 200-seat office, including VLAN configuration, firewall setup, and remote access VPN.",
+      "tags": ["CCNA", "Firewall", "VLAN", "VPN"],
+      "image": "",
+      "featured": true
+    },
+    {
+      "id": 2,
+      "title": "CCTV Surveillance System",
+      "category": "Security",
+      "description": "Installed and configured a comprehensive CCTV surveillance system covering 50+ cameras with remote monitoring capabilities.",
+      "tags": ["CCTV", "Security", "Remote Monitoring"],
+      "image": "",
+      "featured": true
+    },
+    {
+      "id": 3,
+      "title": "Remote IT Support Infrastructure",
+      "category": "Support",
+      "description": "Implemented remote desktop support framework using AnyDesk and TeamViewer, reducing onsite visits by 60% while improving resolution times.",
+      "tags": ["AnyDesk", "TeamViewer", "Remote Support"],
+      "image": "",
+      "featured": true
+    },
+    {
+      "id": 4,
+      "title": "PC Backup & Recovery System",
+      "category": "Data Management",
+      "description": "Deployed AOMEI PC Backup solution across an enterprise environment, automating backups and creating disaster recovery protocols.",
+      "tags": ["AOMEI", "Backup", "Recovery", "Windows"],
+      "image": "",
+      "featured": false
+    }
+  ]
+}

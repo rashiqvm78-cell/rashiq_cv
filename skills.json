@@ -1,0 +1,34 @@
+{
+  "categories": [
+    {
+      "id": "software",
+      "name": "Software",
+      "icon": "💻",
+      "skills": ["MS Office", "Antivirus", "Firewall", "Google Cloud", "Anydesk", "Teamviewer", "AOMEI PC Backup", "Adobe Suite", "WordPress", "Google Site"]
+    },
+    {
+      "id": "os",
+      "name": "Operating Systems",
+      "icon": "🖥️",
+      "skills": ["Windows", "MacOS", "Android", "Linux"]
+    },
+    {
+      "id": "programming",
+      "name": "Programming",
+      "icon": "⚙️",
+      "skills": ["HTML", "Java", "Android SDK", "Java JDK"]
+    },
+    {
+      "id": "hardware",
+      "name": "Hardware",
+      "icon": "🔧",
+      "skills": ["Dell", "Acer", "HP", "Mac", "Asus", "Lenovo", "Toshiba"]
+    },
+    {
+      "id": "additional",
+      "name": "Additional",
+      "icon": "🛠️",
+      "skills": ["Electronic Devices Repair", "CCTV Installation", "Network Configuration", "Remote Support"]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "jobs": [
+    {
+      "id": 1,
+      "company": "NSE IT LIMITED",
+      "role": "IT Network Support",
+      "period": "2021 – Present",
+      "location": "Coimbatore",
+      "current": true,
+      "description": "Leading network infrastructure support and remote access solutions for enterprise clients.",
+      "achievements": [
+        "Provided network and remote access support for 100+ users",
+        "Created procedural documentation and relevant technical reports",
+        "Maintained network devices and peripherals ensuring 99% uptime",
+        "Identified and resolved complex connectivity issues",
+        "Installed and configured company-critical applications"
+      ]
+    },
+    {
+      "id": 2,
+      "company": "AL SHARAH COMPUTERS LLC",
+      "role": "Computer Technician",
+      "period": "2018 – 2020",
+      "location": "Dubai – Al Khawaneej",
+      "current": false,
+      "description": "Comprehensive hardware and software support for a leading computer solutions provider in Dubai.",
+      "achievements": [
+        "Installed and configured hardware, software, networks, printers and scanners",
+        "Diagnosed and resolved complex hardware and software faults",
+        "Upgraded and maintained software and hardware systems",
+        "Repaired and replaced faulty equipment as necessary",
+        "Tested and evaluated emerging technologies",
+        "Conducted electrical safety checks on all computer equipment"
+      ]
+    },
+    {
+      "id": 3,
+      "company": "SRI RAM VALUE ADDED SERVICE",
+      "role": "IT Assistant Support",
+      "period": "2017 – 2018",
+      "location": "Chennai",
+      "current": false,
+      "description": "First-line IT support handling user queries and maintaining detailed incident logs.",
+      "achievements": [
+        "Managed incoming technical support calls and activity reports",
+        "Recorded events, problems and resolutions in logs",
+        "Suggested effective solutions when system errors occurred"
+      ]
+    }
+  ]
+}

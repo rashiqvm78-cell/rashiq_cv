@@ -1,0 +1,34 @@
+{
+  "education": [
+    {
+      "id": 1,
+      "institution": "BHARATHIAR UNIVERSITY",
+      "degree": "B.Sc. Information Technology",
+      "year": "2016",
+      "location": "Tamilnadu, Coimbatore"
+    }
+  ],
+  "certifications": [
+    {
+      "id": 1,
+      "name": "CCNA",
+      "issuer": "SANSBOUND NETWORK SCHOOL",
+      "year": "2016",
+      "location": "Chennai"
+    },
+    {
+      "id": 2,
+      "name": "Fundamentals of Digital Marketing",
+      "issuer": "Google",
+      "year": "2020",
+      "location": "Online"
+    }
+  ],
+  "languages": [
+    { "name": "Malayalam", "level": "Native", "percent": 100 },
+    { "name": "Tamil", "level": "Native", "percent": 100 },
+    { "name": "English", "level": "Proficient", "percent": 80 },
+    { "name": "Hindi", "level": "Advanced", "percent": 60 },
+    { "name": "Arabic", "level": "Advanced", "percent": 60 }
+  ]
+}
